@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Spring | Groovy Adventures]]></title>
+  <link href="http://sevenlist.github.io/categories/spring/atom.xml" rel="self"/>
+  <link href="http://sevenlist.github.io/"/>
+  <updated>2014-08-24T14:20:39+02:00</updated>
+  <id>http://sevenlist.github.io/</id>
+  <author>
+    <name><![CDATA[sevenlist]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Spring @Transactional With AspectJ]]></title>
+    <link href="http://sevenlist.github.io/2014/08/24/spring-at-transactional-with-aspectj/"/>
+    <updated>2014-08-24T12:05:00+02:00</updated>
+    <id>http://sevenlist.github.io/2014/08/24/spring-at-transactional-with-aspectj</id>
+    <content type="html"><![CDATA[<p>If we want to use the <code>@Transactional</code> annotation on private methods, we cannot use Spring&rsquo;s default proxy mode -
+it only works for public methods that are called from client code.</p>
+
+<p>For self-invoked methods we need to use <em>AspectJ</em>.</p>
+
+<!--more-->
+
+
+<h3>An Example</h3>
+
+<p>This may be the case e.g. when we want to save incoming data and send a letter using that data within a transaction.
+If saving the data fails we do not want to send the letter.
+If sending the letter fails we do not want to loose the data that we received.
+Hence, we want to save the data in a separate transaction, by annotating our saveData(..) method with
+<code>@Transactional(propagation = Propagation.REQUIRES_NEW)</code>.</p>
+
+<h3>Configuring Spring To Use AspectJ</h3>
+
+<p>On a <code>@Configuration</code> class we just need to set the AspectJ advice mode for the transaction management configuration:
+<code>groovy
+@Configuration
+@ComponentScan
+@EnableTransactionManagement(mode = AdviceMode.ASPECTJ)
+class ApplicationConfiguration {
+    // ...
+}
+</code></p>
+
+<h3>Configuring Maven To Run The AspectJ Compiler</h3>
+
+<p>Next we need to use the AspectJ compiler, so let&rsquo;s add its needed dependencies:
+&#8220;` xml
+<dependencies>
+    <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjrt</artifactId>
+        <version>1.7.4</version>
+    </dependency></p>
+
+<pre><code>&lt;!-- In this example we use JPA for persistence. --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.hibernate.javax.persistence&lt;/groupId&gt;
+    &lt;artifactId&gt;hibernate-jpa-2.1-api&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0.Final&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-aspects&lt;/artifactId&gt;
+    &lt;version&gt;4.0.6.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p></dependencies>
+&#8220;`</p>
+
+<p>The AspectJ compiler itself can then be enabled with:
+<code>xml
+&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.codehaus.mojo&lt;/groupId&gt;
+            &lt;artifactId&gt;aspectj-maven-plugin&lt;/artifactId&gt;
+            &lt;version&gt;1.6&lt;/version&gt;
+            &lt;executions&gt;
+                &lt;execution&gt;
+                    &lt;goals&gt;
+                        &lt;goal&gt;compile&lt;/goal&gt;
+                        &lt;!-- &lt;goal&gt;test-compile&lt;/goal&gt; --&gt;
+                    &lt;/goals&gt;
+                &lt;/execution&gt;
+            &lt;/executions&gt;
+            &lt;configuration&gt;
+                &lt;complianceLevel&gt;1.7&lt;/complianceLevel&gt;
+                &lt;forceAjcCompile&gt;true&lt;/forceAjcCompile&gt;
+                &lt;weaveDirectories&gt;
+                    &lt;weaveDirectory&gt;${project.build.outputDirectory}&lt;/weaveDirectory&gt;
+                &lt;/weaveDirectories&gt;
+                &lt;aspectLibraries&gt;
+                    &lt;aspectLibrary&gt;
+                        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+                        &lt;artifactId&gt;spring-aspects&lt;/artifactId&gt;
+                    &lt;/aspectLibrary&gt;
+                &lt;/aspectLibraries&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+    &lt;/plugin&gt;
+&lt;/build&gt;
+</code>
+If we do not use <code>&lt;forceAjcCompile&gt;</code> and do not set the <code>&lt;weaveDirectory&gt;</code> AspectJ will not weave the transaction code into
+our generated Groovy bytecode. Instead, it will warn us with <em>No sources found skipping aspectJ compile</em> when Maven runs.
+That is as the aspectj-maven-plugin processes the src/main/java directory by default but not src/main/groovy.</p>
+
+<h3>How The AspectJ Generated Code Looks Like</h3>
+
+<p>Just for completeness, let&rsquo;s look how AspectJ has wrapped the saveData(..) method with a transaction. Using the
+<a href="https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler">Procyon</a> decompiler we can see:
+<code>groovy
+@Transactional(propagation = Propagation.REQUIRES_NEW)
+public void saveData(final SomeData data) {
+    ((AbstractTransactionAspect)AnnotationTransactionAspect.aspectOf()).ajc$around$org_springframework_transaction_aspectj_AbstractTransactionAspect$1$2a73e96c((Object)this, (AroundClosure)new DataService$AjcClosure3(new Object[] { this, data }), DataService.ajc$tjp_1);
+}
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

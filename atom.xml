@@ -1,16 +1,299 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[My Octopress Blog]]></title>
+  <title><![CDATA[Groovy Adventures]]></title>
   <link href="http://sevenlist.github.io/atom.xml" rel="self"/>
   <link href="http://sevenlist.github.io/"/>
-  <updated>2014-08-24T13:51:08+02:00</updated>
+  <updated>2014-08-24T14:20:39+02:00</updated>
   <id>http://sevenlist.github.io/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[sevenlist]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[A Groovy Java Puzzler: Setting a Property When Its Setter Is Overloaded]]></title>
+    <link href="http://sevenlist.github.io/2014/08/24/a-groovy-java-puzzler-setting-a-property-when-its-setter-is-overloaded/"/>
+    <updated>2014-08-24T12:40:00+02:00</updated>
+    <id>http://sevenlist.github.io/2014/08/24/a-groovy-java-puzzler-setting-a-property-when-its-setter-is-overloaded</id>
+    <content type="html"><![CDATA[<p>Trying out <a href="http://docs.spring.io/spring/docs/4.0.6.RELEASE/spring-framework-reference/html/mail.html">Spring&rsquo;s email support</a>, I wanted to
+send a simple message to a single recipient using code like:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">SimpleMailMessage</span> <span class="n">mailMessage</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleMailMessage</span><span class="o">()</span>
+</span><span class='line'><span class="n">mailMessage</span><span class="o">.</span><span class="na">to</span> <span class="o">=</span> <span class="s1">&#39;me@trash-mail.com&#39;</span>
+</span><span class='line'><span class="c1">// ...</span>
+</span><span class='line'><span class="n">mailSender</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">mailMessage</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To my astonishment this threw an exception:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">javax</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">internet</span><span class="o">.</span><span class="na">AddressException</span><span class="o">:</span> <span class="n">Missing</span> <span class="n">local</span> <span class="n">name</span> <span class="k">in</span> <span class="n">string</span> <span class="err">``@</span><span class="s1">&#39;&#39;</span>
+</span><span class='line'>  <span class="n">at</span> <span class="n">javax</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">internet</span><span class="o">.</span><span class="na">InternetAddress</span><span class="o">.</span><span class="na">checkAddress</span><span class="o">(</span><span class="n">InternetAddress</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">1209</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">at</span> <span class="n">javax</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">internet</span><span class="o">.</span><span class="na">InternetAddress</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">InternetAddress</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">1091</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">at</span> <span class="n">javax</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">internet</span><span class="o">.</span><span class="na">InternetAddress</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">InternetAddress</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">633</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">at</span> <span class="n">javax</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">internet</span><span class="o">.</span><span class="na">InternetAddress</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">InternetAddress</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">610</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">javamail</span><span class="o">.</span><span class="na">MimeMessageHelper</span><span class="o">.</span><span class="na">parseAddress</span><span class="o">(</span><span class="n">MimeMessageHelper</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">707</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">javamail</span><span class="o">.</span><span class="na">MimeMessageHelper</span><span class="o">.</span><span class="na">setTo</span><span class="o">(</span><span class="n">MimeMessageHelper</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">593</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">javamail</span><span class="o">.</span><span class="na">MimeMailMessage</span><span class="o">.</span><span class="na">setTo</span><span class="o">(</span><span class="n">MimeMailMessage</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">109</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">SimpleMailMessage</span><span class="o">.</span><span class="na">copyTo</span><span class="o">(</span><span class="n">SimpleMailMessage</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">194</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">javamail</span><span class="o">.</span><span class="na">JavaMailSenderImpl</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">JavaMailSenderImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">305</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">javamail</span><span class="o">.</span><span class="na">JavaMailSenderImpl</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">JavaMailSenderImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">297</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">MailSender</span><span class="n">$send</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="n">Unknown</span> <span class="n">Source</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Taking a closer look, I recognized that the <code>setTo</code> method of <code>SimpleMailMessage</code> is overloaded as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTo</span><span class="o">(</span><span class="n">String</span> <span class="n">to</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTo</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">to</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<!--more-->
+
+
+<p>So the second method allows for passing a list of recipients.</p>
+
+<p>My intuition told me to check the bytecode the Groovy compiler has generated for setting the <code>to</code> property, using the wonderful <a href="https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler">Procyon</a> decompiler:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">ScriptBytecodeAdapter</span><span class="o">.</span><span class="na">setProperty</span><span class="o">((</span><span class="n">Object</span><span class="o">)</span><span class="s2">&quot;me@trash-mail.com&quot;</span><span class="o">,</span> <span class="o">(</span><span class="n">Class</span><span class="o">)</span><span class="kc">null</span><span class="o">,</span> <span class="o">(</span><span class="n">Object</span><span class="o">)</span><span class="n">mailMessage</span><span class="o">,</span> <span class="s2">&quot;to&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Not having the book at hand at that time but vaguely remembering a <a href="http://www.amazon.com/Java%C2%BF-Puzzlers-Traps-Pitfalls-Corner/dp/032133678X/ref=sr_1_1?ie=UTF8&amp;qid=1408215865&amp;sr=8-1&amp;keywords=java+puzzler">Java Puzzler</a>
+for passing <code>null</code> to an overloaded method, I searched the <em>Java Language Specification</em> for how methods are chosen in my case.
+I found out and refreshed my memory that Java <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-15.html#jls-15.12.2.5">chooses the most specific method</a>.</p>
+
+<p>As an array parameter is more specific than its single reference counterpart, the <code>setTo(String[])</code> method is called.</p>
+
+<p>With the Groovy logic to transform a String to a List of that String&rsquo;s characters when that String is passed to a method
+with a String array parameter, this results figuratively in an invocation like:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">mailMessage</span><span class="o">.</span><span class="na">setTo</span><span class="o">([</span><span class="s1">&#39;m&#39;</span><span class="o">,</span> <span class="s1">&#39;e&#39;</span><span class="o">,</span> <span class="s1">&#39;@&#39;</span><span class="o">,</span> <span class="s1">&#39;t&#39;</span><span class="o">,</span> <span class="s1">&#39;r&#39;</span><span class="o">,</span> <span class="s1">&#39;a&#39;</span><span class="o">,</span> <span class="s1">&#39;s&#39;</span><span class="o">,</span> <span class="s1">&#39;h&#39;</span><span class="o">,</span> <span class="s1">&#39;-&#39;</span><span class="o">,</span> <span class="s1">&#39;m&#39;</span><span class="o">,</span> <span class="s1">&#39;a&#39;</span><span class="o">,</span> <span class="s1">&#39;i&#39;</span><span class="o">,</span> <span class="s1">&#39;l&#39;</span><span class="o">,</span> <span class="s1">&#39;.&#39;</span><span class="o">,</span> <span class="s1">&#39;c&#39;</span><span class="o">,</span> <span class="s1">&#39;o&#39;</span><span class="o">,</span> <span class="s1">&#39;m&#39;</span><span class="o">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As each of those array entries is handled like a recipient, each is passed within a loop to InternetAddress.checkAddress(..).
+The looping terminates while its third iteration as the &ldquo;recipient&rdquo; <code>@</code> is passed to checkAddress(..) - the AddressException is thrown, stating
+<code>Missing local name in string ``@''</code>. Finally, this message makes more sense, doesn&rsquo;t it?</p>
+
+<p>By the way, to solve the problem I just wrote:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">mailMessage</span><span class="o">.</span><span class="na">to</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;me@trash-mail.com&#39;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>All in all, isn&rsquo;t that a groovy Java Puzzler?</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Anonymous Class Field Initialized With an Enclosing Argument Results in MissingPropertyException]]></title>
+    <link href="http://sevenlist.github.io/2014/08/24/anonymous-class-field-initialized-with-an-enclosing-argument-results-in-missingpropertyexception/"/>
+    <updated>2014-08-24T12:05:35+02:00</updated>
+    <id>http://sevenlist.github.io/2014/08/24/anonymous-class-field-initialized-with-an-enclosing-argument-results-in-missingpropertyexception</id>
+    <content type="html"><![CDATA[<p><a href="https://jira.codehaus.org/browse/GROOVY-6996">Vote for the GROOVY-6996 bug!</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Spring @Transactional With AspectJ]]></title>
+    <link href="http://sevenlist.github.io/2014/08/24/spring-at-transactional-with-aspectj/"/>
+    <updated>2014-08-24T12:05:00+02:00</updated>
+    <id>http://sevenlist.github.io/2014/08/24/spring-at-transactional-with-aspectj</id>
+    <content type="html"><![CDATA[<p>If we want to use the <code>@Transactional</code> annotation on private methods, we cannot use Spring&rsquo;s default proxy mode -
+it only works for public methods that are called from client code.</p>
+
+<p>For self-invoked methods we need to use <em>AspectJ</em>.</p>
+
+<!--more-->
+
+
+<h3>An Example</h3>
+
+<p>This may be the case e.g. when we want to save incoming data and send a letter using that data within a transaction.
+If saving the data fails we do not want to send the letter.
+If sending the letter fails we do not want to loose the data that we received.
+Hence, we want to save the data in a separate transaction, by annotating our saveData(..) method with
+<code>@Transactional(propagation = Propagation.REQUIRES_NEW)</code>.</p>
+
+<h3>Configuring Spring To Use AspectJ</h3>
+
+<p>On a <code>@Configuration</code> class we just need to set the AspectJ advice mode for the transaction management configuration:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="nd">@Configuration</span>
+</span><span class='line'><span class="nd">@ComponentScan</span>
+</span><span class='line'><span class="nd">@EnableTransactionManagement</span><span class="o">(</span><span class="n">mode</span> <span class="o">=</span> <span class="n">AdviceMode</span><span class="o">.</span><span class="na">ASPECTJ</span><span class="o">)</span>
+</span><span class='line'><span class="kd">class</span> <span class="nc">ApplicationConfiguration</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// ...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Configuring Maven To Run The AspectJ Compiler</h3>
+
+<p>Next we need to use the AspectJ compiler, so let&rsquo;s add its needed dependencies:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;groupId&gt;</span>org.aspectj<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;artifactId&gt;</span>aspectjrt<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;version&gt;</span>1.7.4<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">&lt;!-- In this example we use JPA for persistence. --&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;groupId&gt;</span>org.hibernate.javax.persistence<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;artifactId&gt;</span>hibernate-jpa-2.1-api<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;version&gt;</span>1.0.0.Final<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;artifactId&gt;</span>spring-aspects<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;version&gt;</span>4.0.6.RELEASE<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependencies&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The AspectJ compiler itself can then be enabled with:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;build&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.codehaus.mojo<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>aspectj-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>1.6<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;goals&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;goal&gt;</span>compile<span class="nt">&lt;/goal&gt;</span>
+</span><span class='line'>                        <span class="c">&lt;!-- &lt;goal&gt;test-compile&lt;/goal&gt; --&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/goals&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;complianceLevel&gt;</span>1.7<span class="nt">&lt;/complianceLevel&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;forceAjcCompile&gt;</span>true<span class="nt">&lt;/forceAjcCompile&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;weaveDirectories&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;weaveDirectory&gt;</span>${project.build.outputDirectory}<span class="nt">&lt;/weaveDirectory&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/weaveDirectories&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;aspectLibraries&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;aspectLibrary&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;artifactId&gt;</span>spring-aspects<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/aspectLibrary&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/aspectLibraries&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'><span class="nt">&lt;/build&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If we do not use <code>&lt;forceAjcCompile&gt;</code> and do not set the <code>&lt;weaveDirectory&gt;</code> AspectJ will not weave the transaction code into
+our generated Groovy bytecode. Instead, it will warn us with <em>No sources found skipping aspectJ compile</em> when Maven runs.
+That is as the aspectj-maven-plugin processes the src/main/java directory by default but not src/main/groovy.</p>
+
+<h3>How The AspectJ Generated Code Looks Like</h3>
+
+<p>Just for completeness, let&rsquo;s look how AspectJ has wrapped the saveData(..) method with a transaction. Using the
+<a href="https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler">Procyon</a> decompiler we can see:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="nd">@Transactional</span><span class="o">(</span><span class="n">propagation</span> <span class="o">=</span> <span class="n">Propagation</span><span class="o">.</span><span class="na">REQUIRES_NEW</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveData</span><span class="o">(</span><span class="kd">final</span> <span class="n">SomeData</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">((</span><span class="n">AbstractTransactionAspect</span><span class="o">)</span><span class="n">AnnotationTransactionAspect</span><span class="o">.</span><span class="na">aspectOf</span><span class="o">()).</span><span class="na">ajc</span><span class="n">$around$org_springframework_transaction_aspectj_AbstractTransactionAspect$1$2a73e96c</span><span class="o">((</span><span class="n">Object</span><span class="o">)</span><span class="k">this</span><span class="o">,</span> <span class="o">(</span><span class="n">AroundClosure</span><span class="o">)</span><span class="k">new</span> <span class="n">DataService$AjcClosure3</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">[]</span> <span class="o">{</span> <span class="k">this</span><span class="o">,</span> <span class="n">data</span> <span class="o">}),</span> <span class="n">DataService</span><span class="o">.</span><span class="na">ajc</span><span class="n">$tjp_1</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
 </feed>

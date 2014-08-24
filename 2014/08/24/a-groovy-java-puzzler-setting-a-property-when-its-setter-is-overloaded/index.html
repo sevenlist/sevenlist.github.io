@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Groovy Adventures</title>
+  <title>A Groovy Java Puzzler: Setting a Property When Its Setter Is Overloaded - Groovy Adventures</title>
   <meta name="author" content="sevenlist">
 
   
@@ -23,7 +23,7 @@ SimpleMailMessage &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://sevenlist.github.io">
+  <link rel="canonical" href="http://sevenlist.github.io/2014/08/24/a-groovy-java-puzzler-setting-a-property-when-its-setter-is-overloaded">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Groovy Adventures" type="application/atom+xml">
@@ -77,15 +77,12 @@ SimpleMailMessage &hellip;">
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/2014/08/24/a-groovy-java-puzzler-setting-a-property-when-its-setter-is-overloaded/">A Groovy Java Puzzler: Setting a Property When Its Setter Is Overloaded</a></h1>
+      <h1 class="entry-title">A Groovy Java Puzzler: Setting a Property When Its Setter Is Overloaded</h1>
     
     
       <p class="meta">
@@ -96,18 +93,18 @@ SimpleMailMessage &hellip;">
 
 <time class='entry-date' datetime='2014-08-24T12:40:00+02:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:40 pm</span></time>
         
-           | <a href="/2014/08/24/a-groovy-java-puzzler-setting-a-property-when-its-setter-is-overloaded/#disqus_thread"
-             data-disqus-identifier="http://sevenlist.github.io/2014/08/24/a-groovy-java-puzzler-setting-a-property-when-its-setter-is-overloaded/">Comments</a>
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://sevenlist.github.io">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>Trying out <a href="http://docs.spring.io/spring/docs/4.0.6.RELEASE/spring-framework-reference/html/mail.html">Spring&rsquo;s email support</a>, I wanted to
+<div class="entry-content"><p>Trying out <a href="http://docs.spring.io/spring/docs/4.0.6.RELEASE/spring-framework-reference/html/mail.html">Spring&rsquo;s email support</a>, I wanted to
 send a simple message to a single recipient using code like:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -115,12 +112,12 @@ send a simple message to a single recipient using code like:</p>
 </span><span class='line'><span class="n">mailMessage</span><span class="o">.</span><span class="na">to</span> <span class="o">=</span> <span class="s1">&#39;me@trash-mail.com&#39;</span>
 </span><span class='line'><span class="c1">// ...</span>
 </span><span class='line'><span class="n">mailSender</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">mailMessage</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>To my astonishment this threw an exception:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -146,104 +143,103 @@ send a simple message to a single recipient using code like:</p>
 </span><span class='line'>  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">javamail</span><span class="o">.</span><span class="na">JavaMailSenderImpl</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">JavaMailSenderImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">297</span><span class="o">)</span>
 </span><span class='line'>  <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">mail</span><span class="o">.</span><span class="na">MailSender</span><span class="n">$send</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="n">Unknown</span> <span class="n">Source</span><span class="o">)</span>
 </span><span class='line'>  <span class="o">...</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>Taking a closer look, I recognized that the <code>setTo</code> method of <code>SimpleMailMessage</code> is overloaded as follows:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTo</span><span class="o">(</span><span class="n">String</span> <span class="n">to</span><span class="o">)</span>
 </span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTo</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">to</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
+<!--more-->
+
+
+<p>So the second method allows for passing a list of recipients.</p>
+
+<p>My intuition told me to check the bytecode the Groovy compiler has generated for setting the <code>to</code> property, using the wonderful <a href="https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler">Procyon</a> decompiler:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">ScriptBytecodeAdapter</span><span class="o">.</span><span class="na">setProperty</span><span class="o">((</span><span class="n">Object</span><span class="o">)</span><span class="s2">&quot;me@trash-mail.com&quot;</span><span class="o">,</span> <span class="o">(</span><span class="n">Class</span><span class="o">)</span><span class="kc">null</span><span class="o">,</span> <span class="o">(</span><span class="n">Object</span><span class="o">)</span><span class="n">mailMessage</span><span class="o">,</span> <span class="s2">&quot;to&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Not having the book at hand at that time but vaguely remembering a <a href="http://www.amazon.com/Java%C2%BF-Puzzlers-Traps-Pitfalls-Corner/dp/032133678X/ref=sr_1_1?ie=UTF8&amp;qid=1408215865&amp;sr=8-1&amp;keywords=java+puzzler">Java Puzzler</a>
+for passing <code>null</code> to an overloaded method, I searched the <em>Java Language Specification</em> for how methods are chosen in my case.
+I found out and refreshed my memory that Java <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-15.html#jls-15.12.2.5">chooses the most specific method</a>.</p>
+
+<p>As an array parameter is more specific than its single reference counterpart, the <code>setTo(String[])</code> method is called.</p>
+
+<p>With the Groovy logic to transform a String to a List of that String&rsquo;s characters when that String is passed to a method
+with a String array parameter, this results figuratively in an invocation like:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">mailMessage</span><span class="o">.</span><span class="na">setTo</span><span class="o">([</span><span class="s1">&#39;m&#39;</span><span class="o">,</span> <span class="s1">&#39;e&#39;</span><span class="o">,</span> <span class="s1">&#39;@&#39;</span><span class="o">,</span> <span class="s1">&#39;t&#39;</span><span class="o">,</span> <span class="s1">&#39;r&#39;</span><span class="o">,</span> <span class="s1">&#39;a&#39;</span><span class="o">,</span> <span class="s1">&#39;s&#39;</span><span class="o">,</span> <span class="s1">&#39;h&#39;</span><span class="o">,</span> <span class="s1">&#39;-&#39;</span><span class="o">,</span> <span class="s1">&#39;m&#39;</span><span class="o">,</span> <span class="s1">&#39;a&#39;</span><span class="o">,</span> <span class="s1">&#39;i&#39;</span><span class="o">,</span> <span class="s1">&#39;l&#39;</span><span class="o">,</span> <span class="s1">&#39;.&#39;</span><span class="o">,</span> <span class="s1">&#39;c&#39;</span><span class="o">,</span> <span class="s1">&#39;o&#39;</span><span class="o">,</span> <span class="s1">&#39;m&#39;</span><span class="o">])</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>As each of those array entries is handled like a recipient, each is passed within a loop to InternetAddress.checkAddress(..).
+The looping terminates while its third iteration as the &ldquo;recipient&rdquo; <code>@</code> is passed to checkAddress(..) - the AddressException is thrown, stating
+<code>Missing local name in string ``@''</code>. Finally, this message makes more sense, doesn&rsquo;t it?</p>
+
+<p>By the way, to solve the problem I just wrote:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">mailMessage</span><span class="o">.</span><span class="na">to</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;me@trash-mail.com&#39;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>All in all, isn&rsquo;t that a groovy Java Puzzler?</p>
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/2014/08/24/a-groovy-java-puzzler-setting-a-property-when-its-setter-is-overloaded/">Read on &rarr;</a>
-    </footer>
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/08/24/anonymous-class-field-initialized-with-an-enclosing-argument-results-in-missingpropertyexception/">Anonymous Class Field Initialized With an Enclosing Argument Results in MissingPropertyException</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-08-24T12:05:35+02:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:05 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="https://jira.codehaus.org/browse/GROOVY-6996">Vote for the GROOVY-6996 bug!</a></p>
-</div>
-  
   
 
+<span class="byline author vcard">Posted by <span class="fn">sevenlist</span></span>
 
-    </article>
-  
-  
-    <article>
       
-  <header>
+
+
+
+
+<time class='entry-date' datetime='2014-08-24T12:40:00+02:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:40 pm</span></time>
+      
+
+
+    </p>
     
-      <h1 class="entry-title"><a href="/2014/08/24/spring-at-transactional-with-aspectj/">Spring @Transactional With AspectJ</a></h1>
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://sevenlist.github.io/2014/08/24/a-groovy-java-puzzler-setting-a-property-when-its-setter-is-overloaded/" data-via="" data-counturl="http://sevenlist.github.io/2014/08/24/a-groovy-java-puzzler-setting-a-property-when-its-setter-is-overloaded/" >Tweet</a>
+  
+  
+  
+</div>
+
     
-    
-      <p class="meta">
-        
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2014/08/24/anonymous-class-field-initialized-with-an-enclosing-argument-results-in-missingpropertyexception/" title="Previous Post: Anonymous class field initialized with an enclosing argument results in MissingPropertyException">&laquo; Anonymous class field initialized with an enclosing argument results in MissingPropertyException</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
-
-
-
-<time class='entry-date' datetime='2014-08-24T12:05:00+02:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:05 pm</span></time>
-        
-           | <a href="/2014/08/24/spring-at-transactional-with-aspectj/#disqus_thread"
-             data-disqus-identifier="http://sevenlist.github.io/2014/08/24/spring-at-transactional-with-aspectj/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>If we want to use the <code>@Transactional</code> annotation on private methods, we cannot use Spring&rsquo;s default proxy mode -
-it only works for public methods that are called from client code.</p>
-
-<p>For self-invoked methods we need to use <em>AspectJ</em>.</p>
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/2014/08/24/spring-at-transactional-with-aspectj/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -272,6 +268,7 @@ it only works for public methods that are called from client code.</p>
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -286,7 +283,10 @@ it only works for public methods that are called from client code.</p>
       var disqus_shortname = 'sevenlist';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://sevenlist.github.io/2014/08/24/a-groovy-java-puzzler-setting-a-property-when-its-setter-is-overloaded/';
+        var disqus_url = 'http://sevenlist.github.io/2014/08/24/a-groovy-java-puzzler-setting-a-property-when-its-setter-is-overloaded/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

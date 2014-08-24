@@ -2,20 +2,44 @@
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   
+  <url>
+    <loc>http://sevenlist.github.io/2014/08/24/a-groovy-java-puzzler-setting-a-property-when-its-setter-is-overloaded/</loc>
+    <lastmod>2014-08-24T12:40:00+02:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://sevenlist.github.io/2014/08/24/anonymous-class-field-initialized-with-an-enclosing-argument-results-in-missingpropertyexception/</loc>
+    <lastmod>2014-08-24T12:05:35+02:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://sevenlist.github.io/2014/08/24/spring-at-transactional-with-aspectj/</loc>
+    <lastmod>2014-08-24T12:05:00+02:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
   
   <url>
     <loc>http://sevenlist.github.io/blog/archives/</loc>
-    <lastmod>2014-08-24T13:51:08+02:00</lastmod>
+    <lastmod>2014-08-24T14:20:39+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://sevenlist.github.io/</loc>
-    <lastmod>2014-08-24T13:51:08+02:00</lastmod>
+    <lastmod>2014-08-24T14:20:39+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
+  
+  <url>
+    <loc>http://sevenlist.github.io/google020c436188c850e6.html</loc>
+    <lastmod>2014-08-24T13:57:05Z</lastmod>
+    <priority>0.6</priority>
+  </url>
   
 </urlset>
